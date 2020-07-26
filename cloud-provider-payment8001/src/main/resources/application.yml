@@ -5,7 +5,7 @@ spring:
   application:
     name: cloud-payment-service
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.1.94:3306/mydb?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&useSSL=false
     username: admin
     password: password
