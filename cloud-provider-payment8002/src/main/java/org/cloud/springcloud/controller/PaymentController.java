@@ -1,10 +1,14 @@
 package org.cloud.springcloud.controller;
 
+import java.util.List;
+
 import org.cloud.springcloud.entity.CommonResult;
 import org.cloud.springcloud.entity.Payment;
 import org.cloud.springcloud.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +26,9 @@ public class PaymentController {
 
     @Value("${server.port}")
     private String serverPort;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
 
     @PostMapping("/payment/create")
     public CommonResult<?> create(@RequestBody Payment payment) {
@@ -43,5 +50,19 @@ public class PaymentController {
         } else {
             return new CommonResult<>(404, "query fail: " + serverPort, null);
         }
+    }
+
+    @GetMapping("/payment/discovery")
+    public Object discovery() {
+        List<String> services = discoveryClient.getServices();
+        for (String eleString : services) {
+            log.info("*elem" + eleString);
+        }
+        List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
+        for (ServiceInstance instance : instances) {
+            log.info(instance.getServiceId() + "\t" + instance.getHost() + "\t" + instance.getPort() + "\t"
+                    + instance.getUri());
+        }
+        return discoveryClient;
     }
 }
