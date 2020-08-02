@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PaymentController {
 
-    //public static final String PAYMENT_URL = "http://localhost:8001";
+    // public static final String PAYMENT_URL = "http://localhost:8001";
     public static final String PAYMENT_URL = "http://CLOUD-PAYMENT-SERVICE";
 
     @Autowired
@@ -41,5 +41,18 @@ public class PaymentController {
                 });
         log.info("get data from remote: " + responseEntity.getBody());
         return responseEntity.getBody();
+    }
+
+    @GetMapping("/consumer/payment/getForEntity/{id}")
+    public CommonResult<Payment> getPaymentById2(@PathVariable("id") Long id) {
+        ResponseEntity<CommonResult<Payment>> responseEntity = restTemplate.exchange(PAYMENT_URL + "/payment/get/" + id,
+                HttpMethod.GET, null, new ParameterizedTypeReference<CommonResult<Payment>>() {
+                });
+        log.info("get data from remote: " + responseEntity.getBody());
+        if(responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody();
+        } else {
+            return new CommonResult<Payment>(404, "operate fail");
+        }
     }
 }
